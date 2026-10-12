@@ -6,10 +6,9 @@ Aplicación SPA con Angular 21, TypeScript, RxJS y Angular Material, desarrollad
 
 ## Demo
 
-<video controls preload="metadata" width="100%">
-  <source src="docs/media/hero-crud-demo.mp4" type="video/mp4">
-  Tu navegador no puede reproducir este video. [Ver demo](docs/media/hero-crud-demo.mp4).
-</video>
+![Demostración de la gestión de superhéroes](docs/media/hero-crud-demo.gif)
+
+[Ver video completo en MP4](docs/media/hero-crud-demo.mp4)
 
 ## Funcionalidades
 
