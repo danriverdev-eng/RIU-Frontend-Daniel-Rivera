@@ -1,0 +1,115 @@
+<div class="container">
+  <header class="header">
+    <h1>Gestión de Súper Héroes</h1>
+    <button mat-raised-button color="primary" (click)="onAddHero()">
+      <mat-icon>add</mat-icon> Añadir Súper Héroe
+    </button>
+  </header>
+
+  <div class="filter-box">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Filtrar por nombre o alias</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="Ej: man" aria-label="Filtrar súper héroes por nombre o alias" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <p class="result-count" data-testid="hero-result-count" aria-live="polite">
+    {{ resultCount() }} {{ resultCount() === 1 ? 'héroe encontrado' : 'héroes encontrados' }}
+  </p>
+
+  <section class="mobile-list" aria-label="Lista de súper héroes" [attr.aria-busy]="isLoading()">
+    @if (isLoading()) {
+      <p class="mobile-loading-state" role="status">Cargando súper héroes…</p>
+    } @else if (hasSearchError()) {
+      <div class="mobile-error-state" role="alert">
+        <p>No se pudo cargar la lista de súper héroes.</p>
+        <button mat-button color="primary" data-testid="retry-search" (click)="retrySearch()">Reintentar</button>
+      </div>
+    } @else {
+      @for (hero of mobileHeroes(); track hero.id) {
+        <article class="hero-card mat-elevation-z1">
+          <div class="hero-card-heading">
+            <div>
+              <h2>{{ hero.name }}</h2>
+              <p>{{ hero.realName }}</p>
+            </div>
+            <span class="status-badge">{{ hero.status }}</span>
+          </div>
+          <dl class="hero-card-details">
+            <div>
+              <dt>Universo</dt>
+              <dd>{{ hero.universe }}</dd>
+            </div>
+          </dl>
+          <div class="hero-card-actions">
+            <button mat-button color="primary" (click)="onEditHero(hero)" [attr.aria-label]="'Editar ' + hero.name">
+              <mat-icon>edit</mat-icon> Editar
+            </button>
+            <button mat-button color="warn" (click)="onDeleteHero(hero)" [attr.aria-label]="'Borrar ' + hero.name">
+              <mat-icon>delete</mat-icon> Borrar
+            </button>
+          </div>
+        </article>
+      } @empty {
+        <p class="mobile-empty-state">No se encontraron súper héroes que coincidan con la búsqueda.</p>
+      }
+    }
+  </section>
+
+  <div class="table-container mat-elevation-z2" [attr.aria-busy]="isLoading()">
+    <table mat-table [dataSource]="dataSource" aria-label="Resultados de súper héroes">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Nombre / Alias </th>
+        <td mat-cell *matCellDef="let hero"> <strong>{{ hero.name }}</strong> </td>
+      </ng-container>
+
+      <ng-container matColumnDef="realName">
+        <th mat-header-cell *matHeaderCellDef> Nombre Real </th>
+        <td mat-cell *matCellDef="let hero"> {{ hero.realName }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="universe">
+        <th mat-header-cell *matHeaderCellDef> Universo </th>
+        <td mat-cell *matCellDef="let hero"> {{ hero.universe }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Estado </th>
+        <td mat-cell *matCellDef="let hero"><span class="status-badge">{{ hero.status }}</span></td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Acciones </th>
+        <td mat-cell *matCellDef="let hero">
+          <button mat-icon-button color="primary" (click)="onEditHero(hero)" title="Editar" [attr.aria-label]="'Editar ' + hero.name">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="onDeleteHero(hero)" title="Borrar" [attr.aria-label]="'Borrar ' + hero.name">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="5">
+          @if (isLoading()) {
+            <span role="status">Cargando súper héroes…</span>
+          } @else if (hasSearchError()) {
+            <div class="table-error-state" role="alert" aria-live="assertive">
+              <span>No se pudo cargar la lista de súper héroes.</span>
+              <button mat-button color="primary" data-testid="retry-search" (click)="retrySearch()">Reintentar</button>
+            </div>
+          } @else {
+            No se encontraron súper héroes que coincidan con la búsqueda.
+          }
+        </td>
+      </tr>
+    </table>
+
+  </div>
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" [pageSize]="5" showFirstLastButtons (page)="onPageChange($event.pageIndex, $event.pageSize)"></mat-paginator>
+</div>

@@ -1,0 +1,55 @@
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-shell-header {
+  display: flex;
+  align-items: center;
+  min-height: 4.75rem;
+  padding: 0 2rem;
+  background: var(--brand-navy);
+}
+
+.brand-wordmark {
+  display: inline-flex;
+  align-items: stretch;
+  color: #fff;
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.brand-wordmark:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgb(0 0 0 / 22%);
+}
+
+.brand-wordmark:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+.brand-wordmark img {
+  display: block;
+  width: 15.6rem;
+  max-width: min(70vw, 15.6rem);
+  height: auto;
+}
+
+.app-shell-main {
+  min-height: calc(100vh - 4.75rem);
+}
+
+@media (max-width: 640px) {
+  .app-shell-header {
+    min-height: 4rem;
+    padding: 0 1rem;
+  }
+
+  .brand-wordmark img {
+    width: 12rem;
+  }
+
+  .app-shell-main {
+    min-height: calc(100vh - 4rem);
+  }
+}

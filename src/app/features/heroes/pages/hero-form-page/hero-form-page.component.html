@@ -1,0 +1,84 @@
+<div class="form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        {{ isEditMode ? 'Editar Súper Héroe' : 'Registrar Nuevo Súper Héroe' }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (isLoading) {
+        <div class="loading-state" role="status" aria-live="polite">
+          <mat-spinner diameter="32" aria-label="Cargando datos del héroe"></mat-spinner>
+          <span>Cargando datos del héroe…</span>
+        </div>
+      }
+
+      @if (errorMessage) {
+        <div class="form-error" role="alert">{{ errorMessage }}</div>
+      }
+
+      <form [formGroup]="heroForm" (ngSubmit)="onSubmit()" class="form-grid">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre / Alias</mat-label>
+          <input matInput formControlName="name" appUppercase placeholder="Ej: SPIDERMAN" />
+          @if (heroForm.controls.name.touched && heroForm.controls.name.hasError('required')) {
+            <mat-error>El nombre es obligatorio.</mat-error>
+          }
+          @if (heroForm.controls.name.touched && heroForm.controls.name.hasError('minlength')) {
+            <mat-error>El nombre debe tener al menos 3 caracteres.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre Real</mat-label>
+          <input matInput formControlName="realName" placeholder="Ej: Peter Parker" />
+          @if (heroForm.controls.realName.touched && heroForm.controls.realName.hasError('required')) {
+            <mat-error>El nombre real es obligatorio.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Poderes (separados por coma)</mat-label>
+          <input matInput formControlName="powers" placeholder="Ej: Sentido arácnido, Trepar paredes" />
+          @if (heroForm.controls.powers.touched && heroForm.controls.powers.hasError('required')) {
+            <mat-error>Debes ingresar al menos un poder.</mat-error>
+          }
+          @if (heroForm.controls.powers.touched && heroForm.controls.powers.hasError('powersFormat')) {
+            <mat-error>Separa los poderes con comas y completa cada valor.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Universo</mat-label>
+          <mat-select formControlName="universe" panelClass="brand-select-panel">
+            <mat-option value="Marvel">Marvel</mat-option>
+            <mat-option value="DC">DC</mat-option>
+            <mat-option value="Local">Local</mat-option>
+            <mat-option value="Otro">Otro</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="status" panelClass="brand-select-panel">
+            <mat-option value="Active">Activo</mat-option>
+            <mat-option value="Inactive">Inactivo</mat-option>
+            <mat-option value="Retired">Retirado</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="heroForm.invalid || isLoading || isSubmitting || loadFailed">
+            @if (isSubmitting) {
+              <mat-spinner diameter="18" aria-label="Guardando héroe"></mat-spinner>
+            } @else {
+              {{ isEditMode ? 'Guardar Cambios' : 'Registrar Héroe' }}
+            }
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
