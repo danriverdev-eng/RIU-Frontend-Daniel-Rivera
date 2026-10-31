@@ -1,7 +1,8 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { HeroService, HeroServiceError } from './hero.service';
 import { HeroCreateDto, HeroUpdateDto } from '../models/hero.model';
+import { LoadingService } from './loading.service';
 
 describe('HeroService', () => {
   let service: HeroService;
@@ -130,5 +131,48 @@ describe('HeroService', () => {
     await firstValueFrom(service.deleteHero('1'));
 
     expect(service.heroes().some(({ id }) => id === '1')).toBeFalse();
+  });
+
+  it('keeps the global indicator visible during in-memory create, update and delete', fakeAsync(() => {
+    const loadingService = TestBed.inject(LoadingService);
+    const name = `Loading ${globalThis.crypto.randomUUID()}`;
+    const dto: HeroCreateDto = {
+      name,
+      realName: 'Loading Test',
+      powers: ['Visibility'],
+      universe: 'Local',
+      status: 'Active'
+    };
+    let createdId = '';
+
+    service.createHero(dto).subscribe((hero) => createdId = hero.id);
+    expect(loadingService.isLoading()).toBeTrue();
+    expect(service.heroes().some((hero) => hero.name === name)).toBeTrue();
+    tick(150);
+    expect(loadingService.isLoading()).toBeFalse();
+
+    service.updateHero(createdId, { realName: 'Updated Loading Test' }).subscribe();
+    expect(loadingService.isLoading()).toBeTrue();
+    tick(150);
+    expect(loadingService.isLoading()).toBeFalse();
+
+    service.deleteHero(createdId).subscribe();
+    expect(loadingService.isLoading()).toBeTrue();
+    tick(150);
+    expect(loadingService.isLoading()).toBeFalse();
+    expect(service.heroes().some((hero) => hero.id === createdId)).toBeFalse();
+  }));
+
+  it('does not apply the mutation display duration to reads and searches', () => {
+    const loadingService = TestBed.inject(LoadingService);
+    let readCompleted = false;
+    let searchCompleted = false;
+
+    service.getHeroById('1').subscribe(() => readCompleted = true);
+    service.searchHeroesByName('man').subscribe(() => searchCompleted = true);
+
+    expect(readCompleted).toBeTrue();
+    expect(searchCompleted).toBeTrue();
+    expect(loadingService.isLoading()).toBeFalse();
   });
 });

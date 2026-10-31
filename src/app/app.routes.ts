@@ -23,5 +23,12 @@ export const routes: Routes = [
         (m) => m.HeroFormPageComponent
       )
   },
+  {
+    path: 'heroes/:id',
+    loadComponent: () =>
+      import('./features/heroes/pages/hero-detail-page/hero-detail-page.component').then(
+        (m) => m.HeroDetailPageComponent
+      )
+  },
   { path: '**', redirectTo: 'heroes' }
 ];

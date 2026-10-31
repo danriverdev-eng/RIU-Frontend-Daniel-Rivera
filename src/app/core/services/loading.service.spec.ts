@@ -1,4 +1,5 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { of, tap, timer } from 'rxjs';
 import { LoadingService } from './loading.service';
 
 describe('LoadingService', () => {
@@ -29,4 +30,33 @@ describe('LoadingService', () => {
 
     expect(service.isLoading()).toBeFalse();
   });
+
+  it('tracks an observable operation through completion', () => {
+    let wasLoadingDuringEmission = false;
+
+    service.track(of('complete').pipe(
+      tap(() => wasLoadingDuringEmission = service.isLoading())
+    )).subscribe();
+
+    expect(wasLoadingDuringEmission).toBeTrue();
+    expect(service.isLoading()).toBeFalse();
+  });
+
+  it('honors the minimum display duration without extending a longer operation', fakeAsync(() => {
+    service.track(of('complete'), 150).subscribe();
+
+    expect(service.isLoading()).toBeTrue();
+    tick(149);
+    expect(service.isLoading()).toBeTrue();
+    tick(1);
+    expect(service.isLoading()).toBeFalse();
+
+    let longerOperationCompleted = false;
+    service.track(timer(200), 150).subscribe(() => longerOperationCompleted = true);
+    tick(199);
+    expect(service.isLoading()).toBeTrue();
+    tick(1);
+    expect(service.isLoading()).toBeFalse();
+    expect(longerOperationCompleted).toBeTrue();
+  }));
 });

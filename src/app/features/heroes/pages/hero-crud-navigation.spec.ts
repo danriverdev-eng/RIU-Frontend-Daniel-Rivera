@@ -5,6 +5,8 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { HeroFormPageComponent } from './hero-form-page/hero-form-page.component';
+import { HeroDetailPageComponent } from './hero-detail-page/hero-detail-page.component';
+import { HeroListPageComponent } from './hero-list-page/hero-list-page.component';
 import { HeroService } from '../../../core/services/hero.service';
 import { routes } from '../../../app.routes';
 
@@ -60,5 +62,28 @@ describe('Hero CRUD navigation with the real service', () => {
     expect(heroService.heroes().find(({ id }) => id === '1')?.realName)
       .toBe('Peter Parker actualizado');
     expect(harness.routeNativeElement?.textContent).toContain('Peter Parker actualizado');
+  });
+
+  it('shows the selected hero details and provides an edit link', async () => {
+    const detail = await harness.navigateByUrl('/heroes/1', HeroDetailPageComponent);
+
+    expect(detail.hero()?.name).toBe('Spiderman');
+    expect(harness.routeNativeElement?.textContent).toContain('Peter Parker');
+    expect(harness.routeNativeElement?.textContent).toContain('Sentido arácnido');
+    expect(harness.routeNativeElement?.querySelector('a[href="/heroes/edit/1"]')).not.toBeNull();
+  });
+
+  it('opens the detail page from an accessible list action', async () => {
+    await harness.navigateByUrl('/heroes', HeroListPageComponent);
+    const viewButton = harness.routeNativeElement?.querySelector(
+      '[aria-label="Ver detalle de Spiderman"]'
+    ) as HTMLButtonElement;
+
+    viewButton.click();
+    await harness.fixture.whenStable();
+    harness.fixture.detectChanges();
+
+    expect(router.url).toBe('/heroes/1');
+    expect(harness.routeNativeElement?.textContent).toContain('Sentido arácnido');
   });
 });

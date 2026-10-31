@@ -1,6 +1,6 @@
 .form-container {
   padding: clamp(1rem, 4vw, 2rem);
-  max-width: 600px;
+  max-width: 37.5rem;
   margin: clamp(1rem, 4vw, 2rem) auto;
 }
 
@@ -9,7 +9,7 @@ mat-card {
   border: 1px solid #e1e4eb;
   border-radius: 1rem;
   background: var(--brand-canvas);
-  box-shadow: 0 2px 4px rgb(23 35 63 / 8%);
+  box-shadow: 0 0.125rem 0.25rem rgb(23 35 63 / 8%);
 }
 
 mat-card-header {
@@ -87,7 +87,7 @@ button mat-spinner {
     align-items: stretch;
 
     button {
-      min-height: 44px;
+      min-height: 2.75rem;
     }
 
     button[type='submit'] {

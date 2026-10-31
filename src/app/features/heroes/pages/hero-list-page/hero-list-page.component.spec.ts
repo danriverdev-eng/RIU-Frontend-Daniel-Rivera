@@ -245,6 +245,7 @@ describe('HeroListPageComponent', () => {
     expect(card?.textContent).toContain('Spiderman');
     expect(card?.textContent).toContain('Peter Parker');
     expect(card?.textContent).toContain('Marvel');
+    expect(card?.querySelector('[aria-label="Ver detalle de Spiderman"]')).not.toBeNull();
     expect(card?.querySelector('[aria-label="Editar Spiderman"]')).not.toBeNull();
     expect(card?.querySelector('[aria-label="Borrar Spiderman"]')).not.toBeNull();
   });
