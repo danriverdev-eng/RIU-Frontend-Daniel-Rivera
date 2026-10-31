@@ -6,7 +6,7 @@ import { NgControl } from '@angular/forms';
   standalone: true
 })
 export class UppercaseDirective {
-  private readonly ngControl = inject(NgControl, { optional: true });
+  private readonly _ngControl = inject(NgControl, { optional: true });
 
   @HostListener('input', ['$event'])
   onInput(event: Event): void {
@@ -16,8 +16,8 @@ export class UppercaseDirective {
 
     const uppercaseValue = input.value.toUpperCase();
 
-    if (this.ngControl && this.ngControl.control) {
-      this.ngControl.control.setValue(uppercaseValue, { emitEvent: false });
+    if (this._ngControl && this._ngControl.control) {
+      this._ngControl.control.setValue(uppercaseValue, { emitEvent: false });
     } else {
       input.value = uppercaseValue;
     }

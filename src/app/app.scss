@@ -19,13 +19,13 @@
 }
 
 .brand-wordmark:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 12px rgb(0 0 0 / 22%);
+  transform: translateY(-0.0625rem);
+  box-shadow: 0 0.1875rem 0.75rem rgb(0 0 0 / 22%);
 }
 
 .brand-wordmark:focus-visible {
-  outline: 3px solid #fff;
-  outline-offset: 3px;
+  outline: 0.1875rem solid #fff;
+  outline-offset: 0.1875rem;
 }
 
 .brand-wordmark img {

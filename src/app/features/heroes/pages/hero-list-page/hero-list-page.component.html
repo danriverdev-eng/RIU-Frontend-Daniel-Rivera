@@ -43,6 +43,9 @@
             </div>
           </dl>
           <div class="hero-card-actions">
+            <button mat-button color="primary" (click)="onViewHero(hero)" [attr.aria-label]="'Ver detalle de ' + hero.name">
+              <mat-icon>visibility</mat-icon> Ver
+            </button>
             <button mat-button color="primary" (click)="onEditHero(hero)" [attr.aria-label]="'Editar ' + hero.name">
               <mat-icon>edit</mat-icon> Editar
             </button>
@@ -82,6 +85,9 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Acciones </th>
         <td mat-cell *matCellDef="let hero">
+          <button mat-icon-button color="primary" (click)="onViewHero(hero)" title="Ver detalle" [attr.aria-label]="'Ver detalle de ' + hero.name">
+            <mat-icon>visibility</mat-icon>
+          </button>
           <button mat-icon-button color="primary" (click)="onEditHero(hero)" title="Editar" [attr.aria-label]="'Editar ' + hero.name">
             <mat-icon>edit</mat-icon>
           </button>

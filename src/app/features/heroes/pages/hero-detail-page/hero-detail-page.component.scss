@@ -1,0 +1,49 @@
+.detail-container {
+  width: min(37.5rem, calc(100% - 2rem));
+  margin: clamp(1rem, 4vw, 2rem) auto;
+}
+
+.detail-container > a {
+  margin-bottom: 1rem;
+}
+
+mat-card {
+  padding: 1rem;
+  border: 1px solid #e1e4eb;
+  border-radius: 1rem;
+  background: var(--brand-canvas);
+}
+
+mat-card-title {
+  color: var(--brand-navy);
+}
+
+.hero-details {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0 0;
+}
+
+.hero-details dt {
+  color: var(--brand-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hero-details dd {
+  margin: 0.25rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.detail-state {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  color: var(--brand-muted);
+}
+
+.detail-error {
+  background: #fff0f2;
+  color: var(--brand-red-dark);
+}

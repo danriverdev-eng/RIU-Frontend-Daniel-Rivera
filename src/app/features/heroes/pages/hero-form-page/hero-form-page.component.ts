@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -75,14 +75,16 @@ const commaSeparatedPowers: ValidatorFn = (control: AbstractControl): Validation
     UppercaseDirective
   ],
   templateUrl: './hero-form-page.component.html',
-  styleUrls: ['./hero-form-page.component.scss']
+  styleUrls: ['./hero-form-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeroFormPageComponent implements OnInit {
-  private readonly fb = inject(NonNullableFormBuilder);
-  private readonly heroService = inject(HeroService);
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly _fb = inject(NonNullableFormBuilder);
+  private readonly _heroService = inject(HeroService);
+  private readonly _route = inject(ActivatedRoute);
+  private readonly _router = inject(Router);
+  private readonly _snackBar = inject(MatSnackBar);
+  private readonly _changeDetectorRef = inject(ChangeDetectorRef);
 
   heroForm!: FormGroup<HeroFormControls>;
   isEditMode = false;
@@ -93,29 +95,32 @@ export class HeroFormPageComponent implements OnInit {
   loadFailed = false;
 
   ngOnInit(): void {
-    this.initForm();
-    this.heroId = this.route.snapshot.paramMap.get('id');
+    this._initForm();
+    this.heroId = this._route.snapshot.paramMap.get('id');
 
     if (this.heroId) {
       this.isEditMode = true;
-      this.loadHeroData(this.heroId);
+      this._loadHeroData(this.heroId);
     }
   }
 
-  private initForm(): void {
-    this.heroForm = this.fb.group({
+  private _initForm(): void {
+    this.heroForm = this._fb.group({
       name: ['', [trimmedRequired, trimmedMinimumLength(3)]],
       realName: ['', [trimmedRequired]],
       powers: ['', [commaSeparatedPowers]],
-      universe: this.fb.control('Marvel', { validators: [trimmedRequired] }),
-      status: this.fb.control<HeroStatus>('Active', { validators: [Validators.required] })
+      universe: this._fb.control('Marvel', { validators: [trimmedRequired] }),
+      status: this._fb.control<HeroStatus>('Active', { validators: [Validators.required] })
     });
   }
 
-  private loadHeroData(id: string): void {
+  private _loadHeroData(id: string): void {
     this.isLoading = true;
     this.errorMessage = '';
-    this.heroService.getHeroById(id).pipe(finalize(() => this.isLoading = false)).subscribe({
+    this._heroService.getHeroById(id).pipe(finalize(() => {
+      this.isLoading = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe({
       next: (hero) => {
         this.heroForm.patchValue({
           name: hero.name,
@@ -124,10 +129,12 @@ export class HeroFormPageComponent implements OnInit {
           universe: hero.universe,
           status: hero.status
         });
+        this._changeDetectorRef.markForCheck();
       },
       error: () => {
         this.loadFailed = true;
         this.errorMessage = 'Error al cargar los datos del súper héroe. Vuelve a intentarlo.';
+        this._changeDetectorRef.markForCheck();
       }
     });
   }
@@ -144,17 +151,20 @@ export class HeroFormPageComponent implements OnInit {
 
     this.errorMessage = '';
     this.isSubmitting = true;
-    const heroData = this.toCreateDto();
+    const heroData = this._toCreateDto();
     const request$ = this.isEditMode && this.heroId
-      ? this.heroService.updateHero(this.heroId, this.toUpdateDto(heroData))
-      : this.heroService.createHero(heroData);
+      ? this._heroService.updateHero(this.heroId, this._toUpdateDto(heroData))
+      : this._heroService.createHero(heroData);
 
-    request$.pipe(finalize(() => this.isSubmitting = false)).subscribe({
+    request$.pipe(finalize(() => {
+      this.isSubmitting = false;
+      this._changeDetectorRef.markForCheck();
+    })).subscribe({
       next: (hero) => {
-        this.showNotification(this.isEditMode
+        this._showNotification(this.isEditMode
           ? 'Súper héroe actualizado con éxito'
           : 'Súper héroe registrado con éxito');
-        this.router.navigate(['/heroes'], this.isEditMode
+        this._router.navigate(['/heroes'], this.isEditMode
           ? undefined
           : { state: { createdHeroId: hero.id } });
       },
@@ -162,11 +172,12 @@ export class HeroFormPageComponent implements OnInit {
         this.errorMessage = this.isEditMode
           ? 'Error al actualizar el súper héroe. Vuelve a intentarlo.'
           : 'Error al crear el súper héroe. Vuelve a intentarlo.';
+        this._changeDetectorRef.markForCheck();
       }
     });
   }
 
-  private toCreateDto(): HeroCreateDto {
+  private _toCreateDto(): HeroCreateDto {
     const value = this.heroForm.getRawValue();
     return {
       name: value.name.trim().toUpperCase(),
@@ -177,7 +188,7 @@ export class HeroFormPageComponent implements OnInit {
     };
   }
 
-  private toUpdateDto(dto: HeroCreateDto): HeroUpdateDto {
+  private _toUpdateDto(dto: HeroCreateDto): HeroUpdateDto {
     return {
       name: dto.name,
       realName: dto.realName,
@@ -188,10 +199,10 @@ export class HeroFormPageComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/heroes']);
+    this._router.navigate(['/heroes']);
   }
 
-  private showNotification(message: string): void {
-    this.snackBar.open(message, 'Cerrar', { duration: 3000 });
+  private _showNotification(message: string): void {
+    this._snackBar.open(message, 'Cerrar', { duration: 3000 });
   }
 }
